@@ -214,7 +214,8 @@ async def test_novel_coordinator_creates_all_sensors():
     # Full novel sensor set (universals + novel-only + device-info + accessories).
     # Exact count guarded against accidental duplicates from the merge.
     assert len(set(entity_ids)) == len(added_entities), "duplicate sensor unique_ids"
-    assert len(added_entities) == 25
+    assert len(added_entities) == 26
+    assert "novel_dev_current_room" in entity_ids
 
     # Universal sensors
     for suffix in ["battery", "error_message", "task_status", "work_mode"]:
