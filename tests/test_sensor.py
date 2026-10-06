@@ -11,6 +11,7 @@ from homeassistant.const import PERCENTAGE, EntityCategory
 
 from custom_components.robovac_mqtt.models import VacuumState
 from custom_components.robovac_mqtt.sensor import (
+    CurrentRoomSensorEntity,
     RoboVacSensor,
     _active_rooms_available,
     _active_rooms_value,
@@ -284,3 +285,16 @@ async def test_novel_cloud_or_local_skips_p2p_only_sensors():
             "dock_status",
         ]:
             assert f"novel_{transport}_{suffix}" in entity_ids
+
+
+def test_current_room_sensor_values_and_unknown(mock_coordinator):
+    mock_coordinator.current_room.return_value = (7, "Bathroom")
+    sensor = CurrentRoomSensorEntity(mock_coordinator)
+    assert sensor.unique_id == "test_id_current_room"
+    assert sensor.native_value == "Bathroom"
+    assert sensor.extra_state_attributes == {"room_id": 7, "room_name": "Bathroom"}
+    mock_coordinator.current_room.return_value = (7, None)
+    assert sensor.native_value == "Room 7"
+    mock_coordinator.current_room.return_value = (0, None)
+    assert sensor.native_value is None
+    assert sensor.extra_state_attributes == {"room_id": None, "room_name": None}
